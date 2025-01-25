@@ -77,6 +77,8 @@ while ($pack = $packs->fetchArray(SQLITE3_ASSOC)) {
         .app-card {
             cursor: pointer;
             transition: transform 0.2s;
+            box-sizing:border-box;
+            padding:20px;
         }
         .app-card:hover {
             transform: scale(1.05);
@@ -95,21 +97,22 @@ while ($pack = $packs->fetchArray(SQLITE3_ASSOC)) {
     <div class="container-fluid">
         <div class="row">
             <!-- Left Navigation Pane -->
-            <div class="col-md-2 bg-dark text-white vh-100 p-3">
-                <h4 class="mb-4">Menu</h4>
+            <div class="col-md-1 bg-dark text-white vh-100 p-3">
+                
                 <a href="#" class="d-block text-white mb-3 nav-link" onclick="loadDashboard()">Dashboard</a>
                 <?php foreach ($applications as $app): ?>
-                    <a href="#" class="d-block text-white mb-3 nav-link" onclick="loadApp('<?php echo $app['url']; ?>')"><?php echo $app['app_name']; ?></a>
+                    <a href="#" class="d-block text-white mb-3 nav-link" onclick="loadApp('<?php echo $app['url']; ?>')">
+                    	<img src="https://jocarsa.com/static/logo/<?php echo $app['logo']; ?>" class="card-img-top" alt="<?php echo $app['app_name']; ?>">
+                    </a>
                 <?php endforeach; ?>
             </div>
 
             <!-- Main Pane -->
-            <div class="col-md-10 p-4">
-                <h1 class="mb-4">Dashboard</h1>
+            <div class="col-md-11 p-4">
                 <div id="dashboard" class="app-grid">
                     <?php foreach ($applications as $app): ?>
                         <div class="card app-card" onclick="loadApp('<?php echo $app['url']; ?>')">
-                            <img src="<?php echo $app['logo']; ?>" class="card-img-top" alt="<?php echo $app['app_name']; ?>">
+                            <img src="https://jocarsa.com/static/logo/<?php echo $app['logo']; ?>" class="card-img-top" alt="<?php echo $app['app_name']; ?>">
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo $app['app_name']; ?></h5>
                                 <p class="card-text"><?php echo $app['description']; ?></p>

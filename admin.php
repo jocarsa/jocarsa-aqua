@@ -1,12 +1,12 @@
 <?php
 // Turn off all error reporting
-error_reporting(0);
+error_reporting(1);
 
 // Or, to hide specific types of errors (e.g., warnings and notices)
 error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE);
 
 // Disable displaying errors to the user
-ini_set('display_errors', 0);
+ini_set('display_errors', 1);
 ?>
 <?php
 // admin.php
@@ -179,10 +179,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch data for the selected table
 $data = [];
 if ($action === 'list') {
+    // Validate the table name
+    $validTables = ['users', 'applications', 'packs', 'apps_in_pack', 'user_packs', 'admins'];
+    if (!in_array($table, $validTables)) {
+        die("Invalid table specified.");
+    }
+
     if ($table === 'apps_in_pack') {
         // Fetch apps_in_pack with related pack and app names
         $result = $db->query("
-            SELECT aip.*, p.name AS pack_name, a.app_name AS app_name
+            SELECT aip.id, aip.pack_id, aip.app_id, p.name AS pack_name, a.app_name AS app_name
             FROM apps_in_pack aip
             JOIN packs p ON aip.pack_id = p.id
             JOIN applications a ON aip.app_id = a.id
@@ -190,7 +196,7 @@ if ($action === 'list') {
     } elseif ($table === 'user_packs') {
         // Fetch user_packs with related user and pack names
         $result = $db->query("
-            SELECT up.*, u.username AS user_name, p.name AS pack_name
+            SELECT up.id, up.user_id, up.pack_id, u.username AS user_name, p.name AS pack_name
             FROM user_packs up
             JOIN users u ON up.user_id = u.id
             JOIN packs p ON up.pack_id = p.id
@@ -199,6 +205,13 @@ if ($action === 'list') {
         // Fetch data for other tables
         $result = $db->query("SELECT * FROM $table");
     }
+
+    // Check if the query executed successfully
+    if ($result === false) {
+        die("Query failed: " . $db->lastErrorMsg());
+    }
+
+    // Fetch data
     while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
         $data[] = $row;
     }
